@@ -70,6 +70,21 @@ def lambda_handler(event, context):
         TargetArn=snsArn,
         Message=message
     )
+
+    scheduler = boto3.client('scheduler')
+
+    flex_window = { "Mode": "OFF" }
+
+    schedule_check_accounts = {
+        "RoleArn": "arn:aws:iam::556276873924:role/schedule_Movingaccountrole",
+        "Arn": "arn:aws:lambda:us-east-1:556276873924:function:checkorg",
+        "Input": "{ 'Payload': 'move_account' }"}
+    
+    scheduler.create_schedule(
+        Name="schedule_check_accounts",
+        schedule_expression = "cron(5,35 14 * * ? *)",
+        Target=schedule_check_accounts,
+        FlexibleTimeWindow=flex_window)
     
     return {
     'statusCode': 200,

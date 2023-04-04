@@ -150,7 +150,7 @@ timeout                        =  10
 //depends_on                     = aws_iam_role_policy_attachment.attach_iam_policy_to_iam_role
 }
 
-resource "aws_lambda_function" "terraform_lambda_func_tf_checaccount" {
+resource "aws_lambda_function" "terraform_lambda_func_tf_checkaccount" {
 filename                       = "${path.module}/pythonprog/checkorg.zip"
 function_name                  = "checkorg"
 role                           =  aws_iam_role.lambda_role_tf.arn
@@ -185,7 +185,7 @@ resource "aws_cloudwatch_event_target" "Lambda_tf" {
   
 }
 
- resource "aws_scheduler_schedule" "checkckaccount" {
+ resource "aws_scheduler_schedule" "checkaccount" {
   name       = "schedule_check_accounts"
   group_name = "default"
 
@@ -196,7 +196,7 @@ resource "aws_cloudwatch_event_target" "Lambda_tf" {
   schedule_expression = "cron(5,35 14 * * ? *)"
 
   target {
-    arn      = aws_lambda_function.terraform_lambda_func_tf_back.arn
+    arn      = aws_lambda_function.terraform_lambda_func_tf_checkaccount.arn
     role_arn = aws_iam_role.Scheduler_role_tf.arn
   }
   

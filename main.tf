@@ -185,7 +185,7 @@ resource "aws_cloudwatch_event_target" "Lambda_tf" {
   
 }
 
- resource "aws_scheduler_schedule" "checkaccount" {
+/* resource "aws_scheduler_schedule" "checkaccount" {
   name       = "schedule_check_accounts"
   group_name = "default"
 
@@ -200,6 +200,26 @@ resource "aws_cloudwatch_event_target" "Lambda_tf" {
     role_arn = aws_iam_role.Scheduler_role_tf.arn
   }
   
+}*/
+
+resource "aws_cloudwatch_event_rule" "everyday_5pm" {
+  name        = "everyday_5pm"
+  description = "trigger lambda everyday 5 pm"
+
+  schedule_expression = "cron(5,35 14 * * ? *)"
+}
+
+resource "aws_cloudwatch_event_target" "lambda_target" {
+  rule      = aws_cloudwatch_event_rule.everyday_5pm.name
+  target_id = "SendToLambda"
+  arn       = aws_lambda_function.terraform_lambda_func_tf_checkaccount.arn
 }
 
   
+resource "aws_lambda_permission" "allow_eventbridge" {
+  statement_id  = "AllowExecutionFromEventBridge"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.terraform_lambda_func_tf_checkaccount.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.everyday_5pm.arn
+}
